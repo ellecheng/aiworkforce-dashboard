@@ -68,4 +68,4 @@ framework design, and front-end development.
  
 ---
  
-[Your name] · [LinkedIn link] · [Optional: short line on your current role]
+Elle Cheng · Values & Culture Transformation · Human-centric leadership in an AI era workforce
