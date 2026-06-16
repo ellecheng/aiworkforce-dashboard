@@ -118,10 +118,11 @@
 
   /* ====== DIAGNOSTIC DIAL GRID ====== */
   .dial-grid{
-    display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:10px;
+    display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:10px;
   }
-  @media (max-width:880px){ .dial-grid{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:480px){ .dial-grid{grid-template-columns:1fr;} }
+  @media (max-width:980px){ .dial-grid{grid-template-columns:repeat(3,1fr);} }
+  @media (max-width:600px){ .dial-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:380px){ .dial-grid{grid-template-columns:1fr;} }
   .dial{
     background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
     padding:18px 16px; text-align:center; cursor:pointer;
@@ -288,9 +289,9 @@
 
       <div class="legend">
         <span><span class="dot" style="background:#9CAE8C"></span>Your org</span>
-        <span><span class="dot" style="background:#2E4A33"></span>Selected benchmark</span>
-        <span><span class="dot" style="background:#BD9B4A"></span>High-performing (BCG Reshape/Invent)</span>
-        <span style="margin-left:auto; font-style:italic;">Gaps of 15pp+ vs. high-performing orgs are flagged below the dial.</span>
+        <span><span class="dot" style="background:#2E4A33"></span>Selected market average (inner tick)</span>
+        <span><span class="dot" style="background:#BD9B4A; opacity:0.6;"></span>High-performing reference (outer tick, BCG Reshape/Invent)</span>
+        <span style="margin-left:auto; font-style:italic;">Gaps of 10pp+ vs. the selected market average are flagged below each dial.</span>
       </div>
 
       <div id="tension-details"></div>
@@ -330,12 +331,14 @@
         Figures are quoted as published. Where a chart value was read visually from a source PDF rather than
         stated in body text, it is marked with &ldquo;~&rdquo;. The benchmark values used in the diagnostic
         dials above are mapped onto a common 0&ndash;100 scale by theme, since the two surveys use different
-        question wording &mdash; this mapping, the 15-point gap threshold, and the behaviour/COE recommendations
-        are an editorial framework built for this dashboard, not a statistical finding from either report.
-        Treat the diagnostic as a starting structure for a real internal pulse survey, not a substitute for one.
-        This dashboard was built as a hands-on AI-literacy exercise: extracting findings from four source
-        documents, identifying cross-report themes, and translating them into a leadership-behaviour and
-        regional-activation framework using Claude.
+        question wording. Gaps are flagged at 10 percentage points or more against the selected market&rsquo;s
+        own average (Singapore or India); the BCG &ldquo;high-performing&rdquo; (Reshape/Invent) benchmark is
+        shown only as a faint reference tick on each dial, not as the basis for flagging. This mapping, the
+        10-point threshold, and the behaviour/COE recommendations are an editorial framework built for this
+        dashboard, not a statistical finding from either report. Treat the diagnostic as a starting structure
+        for a real internal pulse survey, not a substitute for one. This dashboard was built as a hands-on
+        AI-literacy exercise: extracting findings from four source documents, identifying cross-report themes,
+        and translating them into a leadership-behaviour and regional-activation framework using Claude.
       </div>
     </section>
 
@@ -346,14 +349,15 @@
 (function(){
 
   // ---------- DATA ----------
-  const dims = ['support','clarity','trust','safety','training'];
+  const dims = ['support','trust','clarity','training','reassurance','safety'];
 
   const dimMeta = {
-    support:  {label:'Leadership support on AI', tnum:'T1', tension:'tensions outran enablement'},
-    clarity:  {label:'AI strategy clarity', tnum:'T3', tension:'strategy beats tools'},
-    trust:    {label:'Trust in leadership', tnum:'T2', tension:'trust as a multiplier'},
-    safety:   {label:'Psychological safety', tnum:'T6', tension:'joy/strain & governance gap'},
-    training: {label:'Training & upskilling access', tnum:'T4', tension:'skills anxiety is structural'}
+    support:     {label:'Leadership support on AI', tnum:'T1', tension:'tensions outran enablement'},
+    trust:       {label:'Trust in leadership', tnum:'T2', tension:'trust as a multiplier'},
+    clarity:     {label:'AI strategy clarity', tnum:'T3', tension:'strategy beats tools'},
+    training:    {label:'Training & upskilling access', tnum:'T4', tension:'skills anxiety is structural'},
+    safety:      {label:'Psychological safety', tnum:'T6', tension:'joy/strain & governance gap'},
+    reassurance: {label:'Job security reassurance', tnum:'T5', tension:'APAC paradox'}
   };
 
   // Benchmark sets per market, scaled 0-100 by theme (see Sources note)
@@ -361,17 +365,17 @@
     sg: {
       label: 'Singapore',
       context: 'Mature market: near-top AI adoption (84% regular users), but the lowest optimism about role security in this comparison. The gap to close is trust and reassurance, not skill.',
-      values: {support:31, clarity:33, trust:41, safety:51, training:51}
+      values: {support:31, clarity:33, trust:41, safety:51, training:51, reassurance:35}
     },
     in: {
       label: 'India',
       context: 'Hyper-growth market: highest AI adoption and optimism in APAC (92% regular users, 65% emerging-economy optimism), but BCG flags thinner Reshape/Invent investment and governance relative to scale.',
-      values: {support:46, clarity:38, trust:46, safety:55, training:48}
+      values: {support:46, clarity:38, trust:46, safety:55, training:48, reassurance:55}
     }
   };
-  const high = {support:52, clarity:43, trust:44, safety:59, training:52};
+  const high = {support:52, clarity:43, trust:44, safety:59, training:52, reassurance:48};
 
-  const yourOrg = {support:31, clarity:33, trust:41, safety:51, training:51};
+  const yourOrg = {support:31, clarity:33, trust:41, safety:51, training:51, reassurance:35};
 
   // ---------- TENSION CONTENT ----------
   const tensions = {
@@ -414,6 +418,14 @@
       pwc:{q:'Only 51% of non-managers feel they have the L&D they need', a:'vs. 72% of senior executives — and those who feel supported to upskill are 73% more motivated.'},
       bcg:{q:'88% expect major upskilling needs; 36% feel trained', a:'Identical to 2025. 47% say their role has shifted toward managing/directing AI rather than doing the work.'},
       lead:'More training hours on the same role definition won\u2019t close this. Redesign the role first, then build the pathway.'
+    },
+    reassurance: {
+      tnum:'T5',
+      title:'The APAC paradox: highest adoption, highest fear',
+      insight:'APAC workers are using AI more than almost anyone — and worrying about their jobs more than almost anyone, at every level of seniority. Adoption and reassurance are not the same lever.',
+      pwc:{q:'In Singapore, only 35% are optimistic about their role\u2019s future', a:'vs. 53% globally — despite daily GenAI use (31%) running well above the global average.'},
+      bcg:{q:'52% of APAC workers fear losing their job to AI in 10 years', a:'vs. 41% globally — consistent across frontline staff (+17pp), managers (+9pp), and leaders (+7pp). India runs more optimistic than Singapore on this specific measure.'},
+      lead:'"They\u2019re already using it, so they must feel fine about it" is the wrong read in APAC. Job security needs its own explicit message, separate from AI capability messaging — and that message should differ by market, not be copy-pasted regionally.'
     }
   };
 
@@ -439,15 +451,21 @@
     const bench = benchmarks[market].values;
     dims.forEach(d=>{
       const v = yourOrg[d];
-      const gap = high[d] - v;
       const pct = Math.max(0, Math.min(100, v));
+      const benchVal = bench[d];
+      const gap = v - benchVal; // signed: positive = above market avg, negative = below
+      const absGap = Math.abs(gap);
+      const flagged = absGap >= 10;
+      const gapLabel = flagged
+        ? (gap > 0 ? `+${absGap}pp vs ${benchmarks[market].label}` : `\u2212${absGap}pp vs ${benchmarks[market].label}`)
+        : `On par with ${benchmarks[market].label}`;
       const div = document.createElement('div');
       div.className = 'dial' + (activeDim===d ? ' active' : '');
       div.innerHTML = `
         <div class="dname">${dimMeta[d].label}</div>
-        <div class="dring">${ringSVG(pct, gap)}<div class="dval">${pct}</div></div>
+        <div class="dring">${ringSVG(pct, flagged, benchVal, high[d])}<div class="dval">${pct}</div></div>
         <input type="range" min="0" max="100" value="${v}" data-dim="${d}">
-        <div class="dgap ${gap<15?'ok':''}">${gap<15 ? 'On par' : '+'+gap+'pp gap'}</div>
+        <div class="dgap ${flagged?'':'ok'}">${gapLabel}</div>
         <div class="cta">Click to explore ${dimMeta[d].tnum} \u2192</div>
       `;
       div.addEventListener('click', (e)=>{
@@ -465,15 +483,23 @@
     });
   }
 
-  function ringSVG(pct, gap){
+  function ringSVG(pct, flagged, benchVal, highVal){
     const r=26, c=2*Math.PI*r;
     const off = c - (pct/100)*c;
-    const color = gap < 15 ? '#7E9470' : '#BD9B4A';
+    const color = flagged ? '#BD9B4A' : '#7E9470';
+    // faint high-performing reference tick on the outer edge
+    const hAngle = (highVal/100) * 2*Math.PI - Math.PI/2;
+    const hx = 32 + (r+7)*Math.cos(hAngle), hy = 32 + (r+7)*Math.sin(hAngle);
+    // market-average reference tick
+    const bAngle = (benchVal/100) * 2*Math.PI - Math.PI/2;
+    const bx = 32 + (r-7)*Math.cos(bAngle), by = 32 + (r-7)*Math.sin(bAngle);
     return `<svg width="64" height="64" viewBox="0 0 64 64">
       <circle cx="32" cy="32" r="${r}" fill="none" stroke="#E3D9C8" stroke-width="6"/>
       <circle cx="32" cy="32" r="${r}" fill="none" stroke="${color}" stroke-width="6"
         stroke-dasharray="${c}" stroke-dashoffset="${off}" stroke-linecap="round"
         transform="rotate(-90 32 32)"/>
+      <circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="2" fill="#BD9B4A" opacity="0.45"/>
+      <circle cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="2" fill="#2E4A33" opacity="0.7"/>
     </svg>`;
   }
 
