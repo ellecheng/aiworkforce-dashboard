@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI at Work: The Trust Gap — A Workforce Data Synthesis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F2E9;
+    --bg-soft:#F1EADC;
+    --card:#FFFDF7;
+    --ink:#3B2E24;
+    --ink-soft:#7A6A5C;
+    --sage:#9CAE8C;
+    --sage-deep:#7E9470;
+    --forest:#2E4A33;
+    --gold:#BD9B4A;
+    --line:#E3D9C8;
+    --radius:14px;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Playfair Display',serif;
+    color:var(--forest);
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .eyebrow{
+    font-size:11px; font-weight:700; letter-spacing:0.18em;
+    text-transform:uppercase; color:var(--sage-deep);
+  }
+  a{color:var(--forest);}
+  button{font-family:'Inter',sans-serif;}
+
+  /* ====== LAYOUT ====== */
+  .shell{
+    display:grid;
+    grid-template-columns:230px 1fr;
+    max-width:var(--maxw);
+    margin:0 auto;
+  }
+  @media (max-width:880px){
+    .shell{grid-template-columns:1fr;}
+    .rail{display:none;}
+  }
+  .rail{
+    position:sticky; top:0; align-self:start; height:100vh;
+    padding:36px 18px 36px 8px; border-right:1px solid var(--line);
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .rail-brand{
+    font-family:'Playfair Display',serif; font-size:20px; font-weight:600;
+    color:var(--forest); margin-bottom:6px; line-height:1.25;
+  }
+  .rail-sub{font-size:11px; color:var(--ink-soft); margin-bottom:28px; letter-spacing:0.04em;}
+  .rail a{
+    display:flex; align-items:baseline; gap:10px; text-decoration:none;
+    color:var(--ink); font-size:13.5px; font-weight:500; padding:8px 10px;
+    border-radius:8px; transition:background .15s ease, color .15s ease;
+  }
+  .rail a:hover{background:var(--bg-soft); color:var(--forest);}
+  .rail a .tag{
+    font-family:'Playfair Display',serif; font-size:12px; font-weight:600;
+    color:var(--sage-deep); min-width:20px;
+  }
+  .rail-foot{margin-top:auto; font-size:10.5px; color:var(--ink-soft); line-height:1.7; padding:10px;}
+
+  main{padding:0 28px 80px 36px;}
+  @media (max-width:880px){ main{padding:0 20px 60px;} }
+  section{padding-top:64px;}
+  section:first-of-type{padding-top:36px;}
+
+  /* ====== HERO ====== */
+  .hero{padding:48px 0 36px; border-bottom:1px solid var(--line); position:relative;}
+  .hero .eyebrow{margin-bottom:14px;}
+  .hero h1{font-size:40px; font-weight:600; line-height:1.15; max-width:680px;}
+  .hero h1 em{font-style:italic; color:var(--sage-deep);}
+  .hero p.lede{max-width:620px; font-size:15.5px; color:var(--ink-soft); margin-top:18px;}
+  .cottongrass{position:absolute; right:0; top:18px; width:140px; opacity:0.85;}
+  @media (max-width:700px){ .cottongrass{display:none;} }
+
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:8px;}
+  .sec-head .tag{
+    font-family:'Playfair Display',serif; font-size:14px; font-weight:700;
+    color:var(--sage-deep); border:1px solid var(--sage); border-radius:50%;
+    width:30px;height:30px; display:flex;align-items:center;justify-content:center; flex-shrink:0;
+  }
+  .sec-head h2{font-size:25px; font-weight:600;}
+  .sec-intro{max-width:680px; color:var(--ink-soft); font-size:14.5px; margin:10px 0 26px;}
+
+  /* ====== MARKET TOGGLE ====== */
+  .market-toggle{
+    display:inline-flex; border:1px solid var(--sage); border-radius:30px;
+    padding:3px; background:var(--card); margin-bottom:26px; gap:2px;
+  }
+  .market-toggle button{
+    border:none; background:transparent; padding:9px 18px; border-radius:24px;
+    font-size:13px; font-weight:600; color:var(--ink-soft); cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .market-toggle button.active{background:var(--forest); color:#fff;}
+  .market-context{
+    font-size:12.5px; color:var(--ink-soft); margin:-16px 0 22px; max-width:600px;
+  }
+
+  /* ====== DIAGNOSTIC DIAL GRID ====== */
+  .dial-grid{
+    display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:10px;
+  }
+  @media (max-width:880px){ .dial-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:480px){ .dial-grid{grid-template-columns:1fr;} }
+  .dial{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 16px; text-align:center; cursor:pointer;
+    transition:border-color .15s, transform .15s; position:relative;
+  }
+  .dial:hover{border-color:var(--sage-deep); transform:translateY(-2px);}
+  .dial.active{border-color:var(--forest); box-shadow:0 0 0 1px var(--forest) inset;}
+  .dial .dname{font-size:12px; font-weight:600; color:var(--ink); margin-bottom:10px; line-height:1.3; min-height:32px;}
+  .dial .dring{position:relative; width:64px; height:64px; margin:0 auto 8px;}
+  .dial .dring svg{position:absolute; top:0; left:0;}
+  .dial .dval{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'Playfair Display',serif; font-weight:700; font-size:17px; color:var(--forest);
+  }
+  .dial .dgap{font-size:10.5px; color:var(--gold); font-weight:700; letter-spacing:0.02em;}
+  .dial .dgap.ok{color:var(--sage-deep);}
+  .dial .cta{font-size:10px; color:var(--sage-deep); margin-top:6px; letter-spacing:0.04em; text-transform:uppercase;}
+  input[type=range]{
+    width:100%; accent-color:var(--forest); height:3px; border-radius:2px;
+    background:var(--line); margin-top:10px;
+  }
+
+  .legend{display:flex; gap:16px; flex-wrap:wrap; margin:18px 0 50px; font-size:12px; color:var(--ink-soft); align-items:center;}
+  .legend .dot{display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:6px; vertical-align:-1px;}
+
+  /* ====== TENSION DETAIL (drill-down) ====== */
+  .tension-detail{
+    border:1.5px solid var(--forest); border-radius:var(--radius);
+    background:var(--card); padding:28px; margin-bottom:50px; display:none;
+  }
+  .tension-detail.show{display:block;}
+  .tension-detail .tnum-big{
+    font-family:'Playfair Display',serif; font-size:12px; font-weight:700;
+    color:#fff; background:var(--forest); border-radius:6px; padding:3px 9px;
+    display:inline-block; margin-bottom:12px;
+  }
+  .tension-detail h3{font-size:21px; font-weight:700; line-height:1.3; margin-bottom:4px;}
+  .tension-detail .insight{
+    font-style:italic; color:var(--ink-soft); font-size:13.5px; margin-bottom:22px; max-width:640px;
+  }
+  .expand-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:700px){ .expand-row{grid-template-columns:1fr;} }
+  .exp-card{
+    background:var(--bg-soft); border:1px solid var(--line); border-radius:12px;
+    padding:16px 18px; cursor:pointer; transition:background .15s;
+  }
+  .exp-card:hover{background:#ECE3D2;}
+  .exp-card .exhead{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .exp-card .src-tag{
+    font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--sage-deep); background:#fff; border:1px solid var(--sage); border-radius:5px; padding:3px 8px;
+  }
+  .exp-card .src-tag.bcg{color:var(--gold); border-color:var(--gold);}
+  .exp-card .exq{font-size:13px; font-weight:600; color:var(--ink); margin-top:8px;}
+  .exp-card .chevron{font-size:16px; color:var(--ink-soft); transition:transform .2s;}
+  .exp-card.open .chevron{transform:rotate(180deg);}
+  .exp-card .exbody{
+    max-height:0; overflow:hidden; transition:max-height .25s ease;
+    font-size:13px; color:var(--ink); margin-top:0;
+  }
+  .exp-card.open .exbody{max-height:220px; margin-top:12px; padding-top:12px; border-top:1px dashed var(--line);}
+  .tension-detail .leadnote{
+    font-size:13px; color:var(--forest); border-top:1px dashed var(--line);
+    padding-top:14px; margin-top:20px;
+  }
+  .tension-detail .close-btn{
+    float:right; background:none; border:none; color:var(--ink-soft); cursor:pointer;
+    font-size:13px; text-decoration:underline;
+  }
+
+  /* ====== COE MATRIX ====== */
+  .coe-filter-row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px;}
+  .coe-chip{
+    border:1px solid var(--sage); background:var(--card); color:var(--forest);
+    border-radius:20px; padding:8px 16px; font-size:12.5px; font-weight:600;
+    cursor:pointer; transition:background .15s, color .15s;
+  }
+  .coe-chip.active{background:var(--forest); color:#fff; border-color:var(--forest);}
+  .coe-chip.allbtn{border-style:dashed;}
+  .matrix-wrap{border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--card);}
+  table.matrix{width:100%; border-collapse:collapse; font-size:13.5px;}
+  table.matrix th, table.matrix td{padding:14px 16px; text-align:left; vertical-align:top; border-bottom:1px solid var(--line);}
+  table.matrix th{
+    font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--sage-deep);
+    background:var(--bg-soft); font-weight:700;
+  }
+  table.matrix tr:last-child td{border-bottom:none;}
+  table.matrix tr.dim{opacity:0.28; transition:opacity .15s;}
+  table.matrix td.tnum-cell{
+    font-family:'Playfair Display',serif; font-weight:700; color:#fff; background:var(--forest);
+    border-radius:6px; text-align:center; width:36px; font-size:13px;
+  }
+  table.matrix td.coe{width:220px;}
+  .coe-pill{
+    display:inline-block; background:var(--bg-soft); border:1px solid var(--sage); color:var(--forest);
+    border-radius:20px; font-size:11px; font-weight:600; padding:3px 10px; margin:2px 3px 0 0;
+  }
+  .coe-pill.match{background:var(--forest); color:#fff; border-color:var(--forest);}
+  @media (max-width:760px){
+    table.matrix{font-size:12.5px; min-width:640px;}
+    table.matrix th, table.matrix td{padding:10px;}
+    .matrix-wrap{overflow-x:auto;}
+  }
+
+  /* ====== SOURCES BANNER ====== */
+  .loc-banner{
+    margin-top:18px; background:var(--bg-soft); border:1px solid var(--line);
+    border-radius:var(--radius); padding:18px 22px; font-size:13.5px; color:var(--ink);
+  }
+  .loc-banner b{color:var(--forest);}
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="rail">
+    <div>
+      <div class="rail-brand">AI&nbsp;at&nbsp;Work:<br>The Trust Gap</div>
+      <div class="rail-sub">A synthesis dashboard &mdash; PwC + BCG, 2025&ndash;2026</div>
+    </div>
+    <a href="#overview"><span class="tag">—</span> Overview</a>
+    <a href="#diagnostic"><span class="tag">◎</span> Org Diagnostic</a>
+    <a href="#leadership"><span class="tag">→</span> COE Activation Map</a>
+    <a href="#sources"><span class="tag">i</span> Sources</a>
+    <div class="rail-foot">
+      Built as an AI-literacy capstone: extracting, blending, and localizing two independent workforce datasets into one interactive tool. All figures attributed to source &mdash; see Sources.
+    </div>
+  </nav>
+
+  <main>
+    <section id="overview" class="hero">
+      <svg class="cottongrass" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M70 160 C 68 120, 60 90, 50 60" stroke="#7E9470" stroke-width="1.2" fill="none"/>
+        <path d="M70 160 C 72 125, 80 95, 92 65" stroke="#7E9470" stroke-width="1.2" fill="none"/>
+        <path d="M70 160 C 70 130, 70 100, 70 70" stroke="#7E9470" stroke-width="1.2" fill="none"/>
+        <circle cx="50" cy="58" r="8" fill="#F7F2E9" stroke="#BD9B4A" stroke-width="1"/>
+        <circle cx="70" cy="66" r="9" fill="#F7F2E9" stroke="#BD9B4A" stroke-width="1"/>
+        <circle cx="92" cy="63" r="8" fill="#F7F2E9" stroke="#BD9B4A" stroke-width="1"/>
+      </svg>
+      <div class="eyebrow">AI Literacy Capstone &mdash; Workforce Trends, APAC Focus</div>
+      <h1>Adoption raced ahead. <em>Trust didn&rsquo;t keep up.</em></h1>
+      <p class="lede">
+        PwC&rsquo;s Global Workforce Hopes &amp; Fears Survey 2025 and BCG&rsquo;s AI at Work series
+        (APAC 2025 + Global 2026) were fielded independently &mdash; different teams, different years.
+        Read side by side, they tell one story: the technology gap closed faster than the trust gap, and
+        trust is now the main constraint on value. Start below by checking where your own org sits.
+      </p>
+    </section>
+
+    <section id="diagnostic">
+      <div class="sec-head"><span class="tag">◎</span><h2>Where does your org sit?</h2></div>
+      <p class="sec-intro">
+        Pick the market profile closest to your context, then adjust the five sliders to your own org&rsquo;s
+        starting point. Each dial shows your gap against that benchmark. <b>Click any dial</b> to drill into
+        the tension behind it &mdash; the data, the framing, and what leaders do about it.
+      </p>
+
+      <div class="market-toggle">
+        <button id="btn-sg" class="active">Mature market &mdash; Singapore</button>
+        <button id="btn-in">Hyper-growth market &mdash; India</button>
+      </div>
+      <div class="market-context" id="market-context"></div>
+
+      <div class="dial-grid" id="dial-grid"></div>
+
+      <div class="legend">
+        <span><span class="dot" style="background:#9CAE8C"></span>Your org</span>
+        <span><span class="dot" style="background:#2E4A33"></span>Selected benchmark</span>
+        <span><span class="dot" style="background:#BD9B4A"></span>High-performing (BCG Reshape/Invent)</span>
+        <span style="margin-left:auto; font-style:italic;">Gaps of 15pp+ vs. high-performing orgs are flagged below the dial.</span>
+      </div>
+
+      <div id="tension-details"></div>
+    </section>
+
+    <section id="leadership">
+      <div class="sec-head"><span class="tag">→</span><h2>COE Activation Map</h2></div>
+      <p class="sec-intro">
+        Each tension implies an observable leadership behaviour, owned by one or more HR Centres of Excellence.
+        <b>Click a COE</b> below to isolate which rows it owns; click it again, or &ldquo;All&rdquo;, to reset.
+      </p>
+      <div class="coe-filter-row" id="coe-filters"></div>
+      <div class="matrix-wrap">
+        <table class="matrix" id="coe-matrix">
+          <thead>
+            <tr><th></th><th>Tension</th><th>What leaders do differently</th><th>COE ownership</th></tr>
+          </thead>
+          <tbody id="coe-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sources">
+      <div class="sec-head"><span class="tag">i</span><h2>Sources &amp; methodology</h2></div>
+      <p class="sec-intro">
+        Two independently fielded surveys, read together for thematic convergence &mdash; not statistically merged.
+      </p>
+      <div class="loc-banner" style="margin-top:0;">
+        <b>PwC Global Workforce Hopes and Fears Survey 2025</b> &mdash; ~49,800 respondents, 48 countries, 28 sectors, fielded Jul&ndash;Aug 2025.
+        <a href="https://www.pwc.com/gx/en/issues/workforce/hopes-and-fears.html" target="_blank" rel="noopener">Global report</a> &middot;
+        <a href="https://www.pwc.com/sg/en/publications/hopes-and-fears.html" target="_blank" rel="noopener">Singapore edition</a> (n=1,051).
+        <br><br>
+        <b>BCG AI at Work &mdash; Is Asia Pacific Leading the Way?</b> (APAC edition, October 2025) &mdash; n=4,559 across Australia, China, India, Indonesia, Japan, Malaysia, Singapore, South Korea, Thailand.
+        <br><br>
+        <b>BCG AI at Work &mdash; Strategy Matters More Than Tools</b> (Global, Fourth Edition, June 2026) &mdash; n=11,749 across 14 markets.
+        <br><br>
+        Figures are quoted as published. Where a chart value was read visually from a source PDF rather than
+        stated in body text, it is marked with &ldquo;~&rdquo;. The benchmark values used in the diagnostic
+        dials above are mapped onto a common 0&ndash;100 scale by theme, since the two surveys use different
+        question wording &mdash; this mapping, the 15-point gap threshold, and the behaviour/COE recommendations
+        are an editorial framework built for this dashboard, not a statistical finding from either report.
+        Treat the diagnostic as a starting structure for a real internal pulse survey, not a substitute for one.
+        This dashboard was built as a hands-on AI-literacy exercise: extracting findings from four source
+        documents, identifying cross-report themes, and translating them into a leadership-behaviour and
+        regional-activation framework using Claude.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+
+  // ---------- DATA ----------
+  const dims = ['support','clarity','trust','safety','training'];
+
+  const dimMeta = {
+    support:  {label:'Leadership support on AI', tnum:'T1', tension:'tensions outran enablement'},
+    clarity:  {label:'AI strategy clarity', tnum:'T3', tension:'strategy beats tools'},
+    trust:    {label:'Trust in leadership', tnum:'T2', tension:'trust as a multiplier'},
+    safety:   {label:'Psychological safety', tnum:'T6', tension:'joy/strain & governance gap'},
+    training: {label:'Training & upskilling access', tnum:'T4', tension:'skills anxiety is structural'}
+  };
+
+  // Benchmark sets per market, scaled 0-100 by theme (see Sources note)
+  const benchmarks = {
+    sg: {
+      label: 'Singapore',
+      context: 'Mature market: near-top AI adoption (84% regular users), but the lowest optimism about role security in this comparison. The gap to close is trust and reassurance, not skill.',
+      values: {support:31, clarity:33, trust:41, safety:51, training:51}
+    },
+    in: {
+      label: 'India',
+      context: 'Hyper-growth market: highest AI adoption and optimism in APAC (92% regular users, 65% emerging-economy optimism), but BCG flags thinner Reshape/Invent investment and governance relative to scale.',
+      values: {support:46, clarity:38, trust:46, safety:55, training:48}
+    }
+  };
+  const high = {support:52, clarity:43, trust:44, safety:59, training:52};
+
+  const yourOrg = {support:31, clarity:33, trust:41, safety:51, training:51};
+
+  // ---------- TENSION CONTENT ----------
+  const tensions = {
+    support: {
+      tnum:'T1',
+      title:'Adoption outran enablement',
+      insight:'Frontline employees closed the usage gap in a single year — leadership guidance on what to do with the time AI frees up did not close with them.',
+      pwc:{q:'Only 56% feel safe trying new approaches at work', a:'Non-managers report notably lower psychological safety than managers — the same group least likely to get clear AI guidance.'},
+      bcg:{q:'Frontline regular AI use jumped 51% \u2192 74% in a year', a:'Yet 66% of frontline users still get limited or no guidance on what to do with time saved, vs. 52% of leaders, and most don\u2019t redirect it to strategic work.'},
+      lead:'The access gap is closed. The direction-setting gap is now the bottleneck — and it sits with managers, not IT.'
+    },
+    trust: {
+      tnum:'T2',
+      title:'Trust is a multiplier, not a culture nicety',
+      insight:'Where trust in leadership is highest, AI adoption, optimism and motivation all move together. Where it\u2019s lowest, the same tools land very differently.',
+      pwc:{q:'High trust in direct manager = 72% more motivated', a:'High trust in top management correlates with 63% more motivation — trust outperforms most other levers PwC tested.'},
+      bcg:{q:'Clear leadership support on AI = +31pp regular use', a:'Frontline staff with that support are also +34pp more positive about AI-driven career prospects — yet only 31% of APAC frontline staff report having it.'},
+      lead:'The same AI rollout, in a low-trust team, produces anxiety; in a high-trust team, it produces a career story. The tool isn\u2019t the variable — the manager is.'
+    },
+    clarity: {
+      tnum:'T3',
+      title:'Strategy beats tools',
+      insight:'Both reports independently land on the same conclusion: a clear direction matters more than expanding tool access.',
+      pwc:{q:'Alignment with leadership goals = 78% more motivated', a:'Yet only 64% say they understand their organisation\u2019s goals at all — the alignment most workers are missing.'},
+      bcg:{q:'Strong clarity + limited tools beats limited clarity + strong tools', a:'80% measurable impact vs. 60% — clarity adds ~25pp on its own; tools alone add ~5pp.'},
+      lead:'If budget is finite, fund the narrative before the next licence renewal.'
+    },
+    safety: {
+      tnum:'T6',
+      title:'The joy/strain paradox — and a governance gap',
+      insight:'AI makes work better and harder at once, and the next wave (agents) is arriving before the operating model is ready.',
+      pwc:{q:'High psychological safety = 72% more motivated', a:'Only 54% say their team treats failure as a learning opportunity — the exact foundation agentic AI will need most.'},
+      bcg:{q:'67% more satisfaction, but 41% more cognitive load', a:'50% say their company has no clear guidance for managing human\u00d7AI teams at all.'},
+      lead:'The AI "honeymoon" fades within months. What sustains it is strategic clarity, not the next feature release.'
+    },
+    training: {
+      tnum:'T4',
+      title:'Skills anxiety has stopped being a training problem',
+      insight:'The upskilling gap hasn\u2019t moved in two years — because the ask has shifted from "learn the tool" to "redefine the role."',
+      pwc:{q:'Only 51% of non-managers feel they have the L&D they need', a:'vs. 72% of senior executives — and those who feel supported to upskill are 73% more motivated.'},
+      bcg:{q:'88% expect major upskilling needs; 36% feel trained', a:'Identical to 2025. 47% say their role has shifted toward managing/directing AI rather than doing the work.'},
+      lead:'More training hours on the same role definition won\u2019t close this. Redesign the role first, then build the pathway.'
+    }
+  };
+
+  // ---------- COE MATRIX DATA ----------
+  const coeRows = [
+    {tnum:'T1', tension:'Adoption outran enablement', behaviour:'Managers run a recurring "what did AI free up, what\u2019s it for" conversation, and redirect time saved to named strategic work.', coe:['OD & Culture','Talent Development','Inclusion']},
+    {tnum:'T2', tension:'Trust is the multiplier', behaviour:'Leaders use AI visibly themselves, narrate their own mistakes and learning with it, and close the loop publicly on commitments.', coe:['Inclusion','Internal Comms','OD & Culture']},
+    {tnum:'T3', tension:'Strategy beats tools', behaviour:'CEO/CHRO repeatedly narrate the AI roadmap in team-specific terms — not a one-off townhall.', coe:['Internal Comms','OD & Culture','Talent Development']},
+    {tnum:'T4', tension:'Skills anxiety is structural', behaviour:'Redesign the role first — what "good" looks like with AI as a collaborator — then co-design the learning pathway with the people who hold it.', coe:['Talent Development','OD & Culture','Inclusion']},
+    {tnum:'T5', tension:'APAC paradox (adoption vs. fear)', behaviour:'Separate "AI is useful" messaging from "your role is secure" messaging — address job security explicitly and locally, by market.', coe:['Inclusion','Total Rewards / ER','Talent Development']},
+    {tnum:'T6', tension:'Joy/strain & governance gap', behaviour:'Set explicit human\u00d7AI norms — escalation, accountability, error-handling — before agentic rollout.', coe:['OD & Culture','Inclusion','Talent Development']}
+  ];
+
+  // ---------- STATE ----------
+  let market = 'sg';
+  let activeDim = null;
+  let activeCoe = null;
+
+  // ---------- RENDER: DIAL GRID ----------
+  function renderDials(){
+    const grid = document.getElementById('dial-grid');
+    grid.innerHTML = '';
+    const bench = benchmarks[market].values;
+    dims.forEach(d=>{
+      const v = yourOrg[d];
+      const gap = high[d] - v;
+      const pct = Math.max(0, Math.min(100, v));
+      const div = document.createElement('div');
+      div.className = 'dial' + (activeDim===d ? ' active' : '');
+      div.innerHTML = `
+        <div class="dname">${dimMeta[d].label}</div>
+        <div class="dring">${ringSVG(pct, gap)}<div class="dval">${pct}</div></div>
+        <input type="range" min="0" max="100" value="${v}" data-dim="${d}">
+        <div class="dgap ${gap<15?'ok':''}">${gap<15 ? 'On par' : '+'+gap+'pp gap'}</div>
+        <div class="cta">Click to explore ${dimMeta[d].tnum} \u2192</div>
+      `;
+      div.addEventListener('click', (e)=>{
+        if(e.target.tagName==='INPUT') return;
+        toggleTension(d);
+      });
+      div.querySelector('input').addEventListener('input', (e)=>{
+        yourOrg[d] = +e.target.value;
+        e.stopPropagation();
+        renderDials();
+        if(activeDim===d) updateTensionGapNote(d);
+      });
+      div.querySelector('input').addEventListener('click', e=>e.stopPropagation());
+      grid.appendChild(div);
+    });
+  }
+
+  function ringSVG(pct, gap){
+    const r=26, c=2*Math.PI*r;
+    const off = c - (pct/100)*c;
+    const color = gap < 15 ? '#7E9470' : '#BD9B4A';
+    return `<svg width="64" height="64" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="${r}" fill="none" stroke="#E3D9C8" stroke-width="6"/>
+      <circle cx="32" cy="32" r="${r}" fill="none" stroke="${color}" stroke-width="6"
+        stroke-dasharray="${c}" stroke-dashoffset="${off}" stroke-linecap="round"
+        transform="rotate(-90 32 32)"/>
+    </svg>`;
+  }
+
+  // ---------- MARKET TOGGLE ----------
+  function renderMarketContext(){
+    document.getElementById('market-context').textContent = benchmarks[market].context;
+    document.getElementById('btn-sg').classList.toggle('active', market==='sg');
+    document.getElementById('btn-in').classList.toggle('active', market==='in');
+  }
+  document.getElementById('btn-sg').addEventListener('click', ()=>{ market='sg'; renderMarketContext(); renderDials(); if(activeDim) updateTensionGapNote(activeDim); });
+  document.getElementById('btn-in').addEventListener('click', ()=>{ market='in'; renderMarketContext(); renderDials(); if(activeDim) updateTensionGapNote(activeDim); });
+
+  // ---------- TENSION DRILL-DOWN ----------
+  function toggleTension(d){
+    activeDim = (activeDim===d) ? null : d;
+    renderDials();
+    renderTensionDetail();
+  }
+
+  function renderTensionDetail(){
+    const wrap = document.getElementById('tension-details');
+    if(!activeDim){ wrap.innerHTML=''; return; }
+    const t = tensions[activeDim];
+    wrap.innerHTML = `
+      <div class="tension-detail show">
+        <button class="close-btn" id="close-tension">Close ✕</button>
+        <span class="tnum-big">${t.tnum}</span>
+        <h3>${t.title}</h3>
+        <p class="insight">${t.insight}</p>
+        <div class="expand-row">
+          <div class="exp-card" id="exp-pwc">
+            <div class="exhead"><span class="src-tag">PwC</span><span class="chevron">⌄</span></div>
+            <div class="exq">${t.pwc.q}</div>
+            <div class="exbody">${t.pwc.a}</div>
+          </div>
+          <div class="exp-card" id="exp-bcg">
+            <div class="exhead"><span class="src-tag bcg">BCG</span><span class="chevron">⌄</span></div>
+            <div class="exq">${t.bcg.q}</div>
+            <div class="exbody">${t.bcg.a}</div>
+          </div>
+        </div>
+        <div class="leadnote"><b>For leaders:</b> ${t.lead}</div>
+      </div>
+    `;
+    document.getElementById('close-tension').addEventListener('click', ()=>{ activeDim=null; renderDials(); renderTensionDetail(); });
+    document.getElementById('exp-pwc').addEventListener('click', ()=> document.getElementById('exp-pwc').classList.toggle('open'));
+    document.getElementById('exp-bcg').addEventListener('click', ()=> document.getElementById('exp-bcg').classList.toggle('open'));
+  }
+
+  function updateTensionGapNote(d){ /* dial re-render already covers gap text */ }
+
+  // ---------- COE MATRIX ----------
+  function renderCoeFilters(){
+    const allCoe = ['OD & Culture','Talent Development','Inclusion','Internal Comms','Total Rewards / ER'];
+    const row = document.getElementById('coe-filters');
+    row.innerHTML = `<button class="coe-chip allbtn ${activeCoe===null?'active':''}" data-coe="">All</button>` +
+      allCoe.map(c=>`<button class="coe-chip ${activeCoe===c?'active':''}" data-coe="${c}">${c}</button>`).join('');
+    row.querySelectorAll('button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const c = btn.dataset.coe;
+        activeCoe = (c==='') ? null : (activeCoe===c ? null : c);
+        renderCoeFilters();
+        renderCoeTable();
+      });
+    });
+  }
+
+  function renderCoeTable(){
+    const tbody = document.getElementById('coe-tbody');
+    tbody.innerHTML = coeRows.map(r=>{
+      const dim = activeCoe && !r.coe.includes(activeCoe);
+      const pills = r.coe.map(c=>`<span class="coe-pill ${activeCoe===c?'match':''}">${c}</span>`).join('');
+      return `<tr class="${dim?'dim':''}">
+        <td class="tnum-cell">${r.tnum}</td>
+        <td>${r.tension}</td>
+        <td>${r.behaviour}</td>
+        <td class="coe">${pills}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ---------- INIT ----------
+  renderMarketContext();
+  renderDials();
+  renderCoeFilters();
+  renderCoeTable();
+})();
+</script>
+</body>
+</html>
